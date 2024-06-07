@@ -22,11 +22,18 @@ from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 
 
-nvapi_key = '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'
+st.set_page_config(page_title="Symptom extraction", page_icon="")
+
+# Set up the NVIDIA API key: ask the user to provide it in the side bar
+st.sidebar.markdown("Please provide your NVIDIA API key:")
+nvapi_key = st.sidebar.text_input("NVIDIA API key")
 os.environ["NVIDIA_API_KEY"] = nvapi_key
 
 
-st.set_page_config(page_title="Symptom extraction", page_icon="")
+#nvapi_key = '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'
+os.environ["NVIDIA_API_KEY"] = nvapi_key
+
+
 st.title("Health Chatbot: Symptoms extraction")
 
 
@@ -90,6 +97,7 @@ msgs = StreamlitChatMessageHistory()
 memory = ConversationBufferMemory(
     chat_memory=msgs, return_messages=True, memory_key="chat_history", output_key="output"
 )
+ 
 
 if len(msgs.messages) == 0 or st.sidebar.button("Reset chat history"):
     msgs.clear()
@@ -110,7 +118,10 @@ for idx, msg in enumerate(msgs.messages):
 
 if prompt := st.chat_input(placeholder="How Do you feel today?"):
     st.chat_message("user").write(prompt)
-
+    # check if the user has provided the API key
+    if not nvapi_key:
+        st.error("Please provide your NVIDIA API key in the sidebar.")
+        st.stop()
     llm = ChatNVIDIA(model="ai-llama3-70b", nvidia_api_key=nvapi_key, max_tokens=200)
     # temprature of llm
     llm.temperature = 0.02
