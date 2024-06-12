@@ -25,7 +25,7 @@ st.set_page_config(page_title="Symptom extraction", page_icon="")
 
 st.title("Health Chatbot: Symptoms extraction")
 
-nvapi_key = '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'
+nvapi_key = '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'
 
 # Set up the NVIDIA API key: ask the user to provide it in the side bar
 #st.sidebar.markdown("Please provide your NVIDIA API key:")
