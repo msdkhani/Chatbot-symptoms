@@ -39,7 +39,15 @@ st.markdown(
 
 st.title("CarePilot")
 
+<<<<<<< HEAD
 nvapi_key = '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'
+=======
+nvapi_key = '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'
+
+# Set up the NVIDIA API key: ask the user to provide it in the side bar
+#st.sidebar.markdown("Please provide your NVIDIA API key:")
+#nvapi_key = st.sidebar.text_input("NVIDIA API key")
+>>>>>>> 540f0fa1d2a8a39b03b249749f648d1f193aac55
 os.environ["NVIDIA_API_KEY"] = nvapi_key
 
 if "history" not in st.session_state:
@@ -165,6 +173,7 @@ if prompt := st.chat_input(placeholder="How do you feel today?"):
     st.chat_message("user", avatar=avatars["human"]).write(prompt)
     with st.chat_message("assistant", avatar=avatars["ai"]):
         with st.spinner("Generating response..."):
+<<<<<<< HEAD
             msgs.add_user_message(prompt)
             st.session_state.history.append({"role": 'user', "content": prompt})
             response = chain.invoke({'input': prompt, 'history': st.session_state.history})
@@ -172,3 +181,12 @@ if prompt := st.chat_input(placeholder="How do you feel today?"):
             msgs.add_ai_message(response)
 
         st.write(response)
+=======
+            st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
+            cfg = RunnableConfig()
+            cfg["callbacks"] = [st_cb]
+            st.write(["callbacks"])
+            
+            response = rails.generate(prompt=prompt)
+        st.write(response)
+>>>>>>> 540f0fa1d2a8a39b03b249749f648d1f193aac55
