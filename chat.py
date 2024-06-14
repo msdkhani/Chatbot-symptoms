@@ -1,146 +1,174 @@
 import os
 import streamlit as st
+#import logging
 import asyncio
-
 # Create a new event loop
 loop = asyncio.new_event_loop()
-
 # Set the new event loop as the default one for the current context
 asyncio.set_event_loop(loop)
+
 from nemoguardrails import LLMRails, RailsConfig
-from langchain.vectorstores import FAISS
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
-from langchain.agents import ConversationalChatAgent, AgentExecutor
 from langchain.memory import ConversationBufferMemory
 from langchain_community.callbacks import StreamlitCallbackHandler
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
-from langchain_core.runnables import RunnableConfig
 from langchain.chains import LLMChain
-#prompt_templete import
 from langchain_core.prompts import PromptTemplate
+from nemoguardrails.integrations.langchain.runnable_rails import RunnableRails
+from langchain_core.output_parsers import StrOutputParser
 
+#logging.basicConfig(level=logging.INFO)
 
+st.set_page_config(page_title="Symptom Extraction", page_icon="")
 
-st.set_page_config(page_title="Symptom extraction", page_icon="")
+st.markdown(
+    """
+    <style>
+        .st-emotion-cache-janbn0 {
+            flex-direction: row-reverse;
+            text-align: right;
+        }
+        .st-emotion-cache-p4micv {
+            width: 3rem;
+            height: 3rem;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-st.title("Health Chatbot: Symptoms extraction")
+st.title("CarePilot")
 
-nvapi_key = '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'
-
-# Set up the NVIDIA API key: ask the user to provide it in the side bar
-#st.sidebar.markdown("Please provide your NVIDIA API key:")
-#nvapi_key = st.sidebar.text_input("NVIDIA API key")
+nvapi_key = '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'
 os.environ["NVIDIA_API_KEY"] = nvapi_key
 
+if "history" not in st.session_state:
+    st.session_state.history = [{"role": "context", "content": ""}]
 
-
-
+st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
 msgs = StreamlitChatMessageHistory()
-memory = ConversationBufferMemory(
-    chat_memory=msgs, return_messages=True, memory_key="chat_history", output_key="output"
-)
- 
+memory = ConversationBufferMemory(chat_memory=msgs, return_messages=True, memory_key="chat_history")
 
-if len(msgs.messages) == 0 or st.sidebar.button("Reset chat history"):
+
+
+prompt_template = '''
+Greeting:
+user: -hi, hello, how are you
+Agent: Hi,Emily! how are you doing today? How can I assist you with your health concerns?
+
+Continue the conversation based on the user's response.
+If user ask question: Answer the questions to the best of your ability.
+If the user is not feeling well or has symptoms:
+- Acknowledge their symptom once, and then proceed with relevant questions without repeating the sympathy for each response.
+
+Please ask relevant, clear, and concise questions to capture the patient’s symptoms accurately and naturally.
+Do not diagnose or provide treatment advice.
+If the user mentions any symptoms relevant to the template, do not ask for the same symptom again.
+You need to follow the template using the {input}.
+You can find your and the user's previous messages in {history}.
+Do not repeat the history in the conversation.
+Try to continue the conversation based on the template.
+If the user mentions any symptoms, do not ask for the same symptom again.
+The user might mention multiple symptoms; ask about all of them.
+
+Do not write phrases like "Here's my response based on the template."
+
+Emergency situation:
+- stroke,
+- heart attack,
+- severe allergic reaction,
+- severe bleeding,
+- severe burns,
+- severe chest pain,
+
+If you think the user needs immediate medical attention, end the conversation at any time with the following message:
+- This is an emergency. Do not wait for a response. Call 911 immediately.
+
+Template:
+
+We need to collect the following information from you:
+
+Primary Symptom:
+• Can you describe the main symptom or issue you are experiencing?
+
+Additional Symptoms:
+• Are you experiencing any other symptoms? (e.g., fever, fatigue, nausea, dizziness)
+• If yes, please list and describe them.
+
+Severity:
+• On a scale of 1 to 10, how severe is this symptom?
+• Does the severity fluctuate throughout the day?
+
+Duration:
+• How long have you been experiencing this symptom?
+• Did it start suddenly or gradually?
+
+Medical History:
+• Do you have any existing medical conditions or a history of similar issues?
+• Are you currently taking any medications or supplements?
+
+Additional Information:
+• Is there anything else you think might be relevant to your symptoms?
+
+Insurance information:
+• Do you have insurance? If so, what is your insurance provider?
+
+Doctor Appointment:
+• Have you seen a doctor recently or are you planning to see a doctor for this issue?
+• Have you scheduled an appointment with a specific doctor, or would you like help finding a doctor in your area?
+• Have you considered going to an urgent care or an emergency room, or would you prefer to schedule an appointment with a primary care physician?
+
+Extract at the end Summary:
+• Symptoms:
+    • Symptom 1: [Name] - Duration: [Time] - Severity: [Scale] - previous episodes: [detail], medical history: [detail], insurance: [provider]
+    • Symptom 2: [Name] - Duration: [Time] - Severity: [Scale] - previous episodes: [detail], medical history: [detail], insurance: [provider]
+    • …
+• Notes:
+    • [other relevant information]
+
+END conversation with the following message:
+We will send your information to a healthcare professional for further evaluation. Please seek medical attention if your symptoms worsen or if you experience any emergency symptoms. Thank you for sharing your information with us.
+
+'''
+
+
+input_variables = ['input', 'history']
+prompt_1 = PromptTemplate(template=prompt_template, input_variables=input_variables)
+llm = ChatNVIDIA(model="meta/llama3-70b-instruct", nvidia_api_key=nvapi_key, max_tokens=150)
+
+config = RailsConfig.from_path("config")
+guardrails = RunnableRails(config)
+
+# chain = LLMChain(
+#     llm=llm,
+#     prompt=prompt_1,
+#     verbose=True,
+# )
+output_parser = StrOutputParser()
+
+
+chain = prompt_1 | (guardrails | llm) | output_parser
+
+if len(msgs.messages) == 0:
     msgs.clear()
-    msgs.add_ai_message("How can I assist you today with your health concerns?")  # Custom initial message
 
-avatars = {"human": "user", "ai": "assistant"}
+avatars = {
+    "human": 'https://static01.nyt.com/images/2018/09/21/books/00edim1/merlin_137623458_968f9cfc-ceb1-449e-b5ce-543fffca302b-articleLarge.jpg?quality=75&auto=webp&disable=upscale',
+    "ai": 'https://media.istockphoto.com/id/1329569957/photo/happy-young-female-doctor-looking-at-camera.jpg?s=612x612&w=0&k=20&c=7Wq_Y2cl0T4op6Wg_3DFc-xtZfCqTTDvfaXkPGyrHDM='
+}
+
 for idx, msg in enumerate(msgs.messages):
-    with st.chat_message(avatars[msg.type]):
+    with st.chat_message(msg.type, avatar=avatars[msg.type]):
         st.write(msg.content)
-        
+
 if prompt := st.chat_input(placeholder="How do you feel today?"):
-    st.chat_message("user").write(prompt)
-    # if not nvapi_key:
-    #     st.error("Please provide your NVIDIA API key in the sidebar.")
-    #     st.stop()
-    prompt_template = ''''
-    Greeting:
-    user: Hi, I am not feeling well today., I have some symptoms I would like to discuss., Hi, How are you
-    Agent: How are you doing today? Do you have any health concerns or symptoms you would like to discuss?
-    Have sympothy if they mention any symptoms or concerns.
-
-    Agent:
-    Your primary role is to gather detailed information about users’ medical symptoms. Please ask relevant, clear, and concise questions to capture the patient’s symptoms accurately. Do not diagnose or provide treatment advice. Ask for more details about the symptoms.
-    If the user Mention any symptoms relevent to the template, do not ask for the same symptom again.
-
-    Always respond as “Agent:” 
-
-    Template:
-
-    We need to collect the following information from you:
-
-    Primary Symptom:
-        • Can you describe the main symptom or issue you are experiencing?
-
-    Severity:
-        • On a scale of 1 to 10, how severe is this symptom?
-        • Does the severity fluctuate throughout the day?
-
-    Duration:
-        • How long have you been experiencing this symptom?
-        • Did it start suddenly or gradually?
-
-    Pain:
-        • Are you experiencing any pain? If so, where is the pain located?
-        • Can you describe the pain (e.g., sharp, dull, throbbing)?
-        • How long does the pain last when it occurs?
-
-    Additional Symptoms:
-        • Are you experiencing any other symptoms? (e.g., fever, fatigue, nausea, dizziness)
-        • If yes, please list and describe them.
-
-    Previous Episodes:
-        • Have you experienced this symptom before?
-        • If yes, when and how often?
-
-    Triggers and Relievers:
-        • Have you noticed any factors that trigger or worsen your symptoms?
-        • Are there any activities or treatments that relieve your symptoms?
-
-    Medical History:
-        • Do you have any existing medical conditions or a history of similar issues?
-        • Are you currently taking any medications or supplements?
-
-    Lifestyle Factors:
-        • Have there been any recent changes in your lifestyle, such as diet, exercise, or stress levels?
-
-    Additional Information:
-        • Is there anything else you think might be relevant to your symptoms?
-
-    Extract at the end Summary:
-        • Symptoms:
-            • Symptom 1: [Name] - Duration: [Time] - Severity: [Scale]
-            • Symptom 2: [Name] - Duration: [Time] - Severity: [Scale]
-            • …
-        • Notes:
-            • [Additional relevant information]
-
-    END conversation with the following message:
-    We will send your information to a healthcare professional for further evaluation. Please seek medical attention if your symptoms worsen or if you experience any emergency symptoms. Thank you for sharing your information with us.'''
-
-
-    config = RailsConfig.from_path("./config")
-    rails = LLMRails(config=config)
-    input_variables = ["topic"]
-    prompt_1 = PromptTemplate(template=prompt_template, input_variables=input_variables)
-    
-    chain = LLMChain(
-        llm=rails.llm,
-        prompt=prompt_1,
-        verbose=True,
-        memory=memory,
-    )
-    
-    rails.register_action(chain, name="bot")
-    st.write(memory.buffer)
-    with st.chat_message("assistant"):
+    st.chat_message("user", avatar=avatars["human"]).write(prompt)
+    with st.chat_message("assistant", avatar=avatars["ai"]):
         with st.spinner("Generating response..."):
-            st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
-            cfg = RunnableConfig()
-            cfg["callbacks"] = [st_cb]
-            st.write(["callbacks"])
-            
-            response = rails.generate(prompt=prompt)
+            msgs.add_user_message(prompt)
+            st.session_state.history.append({"role": 'user', "content": prompt})
+            response = chain.invoke({'input': prompt, 'history': st.session_state.history})
+            st.session_state.history.append({"role": 'assistant', "content": response})
+            msgs.add_ai_message(response)
+
         st.write(response)

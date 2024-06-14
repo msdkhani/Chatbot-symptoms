@@ -2,14 +2,6 @@ models:
 - type: main
   engine: nvidia_ai_endpoints
   model: meta/llama3-70b-instruct
-instructions:
-  - type: general
-    content: |
-      Below is a conversation between a user and a bot called the Health Bot.
-      The bot is designed to gather detailed information about users' medical symptoms.
-      The bot asks relevant, clear, and concise questions to capture the patient's symptoms accurately.
-      The bot does not diagnose or provide treatment advice. If the bot does not know the answer to a question, it truthfully says it does not know.
-      The bot does not provide medical advice, and it does not replace a doctor's consultation.
 
 prompts:
   - task: self_check_input
@@ -45,16 +37,18 @@ prompts:
       - if a message is a refusal, it should be polite
       - it's ok to give instructions on how to protect user health and provide relevant health information
       - you should not give medical advice or diagnose the user
+      - message should not be off topic from a health conversation and sign and symptom gathering
+
 
       Bot message: "{{ bot_response }}"
 
       Question: Should the message be blocked (Yes or No)?
       Answer:
+    
 rails:
   input:
     flows:
       - self check input
-
 
 
 output:
@@ -62,3 +56,6 @@ output:
       - self check output
 
   
+
+      
+
