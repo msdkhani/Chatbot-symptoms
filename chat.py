@@ -39,15 +39,7 @@ st.markdown(
 
 st.title("CarePilot")
 
-<<<<<<< HEAD
 nvapi_key = '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'
-=======
-nvapi_key = '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'
-
-# Set up the NVIDIA API key: ask the user to provide it in the side bar
-#st.sidebar.markdown("Please provide your NVIDIA API key:")
-#nvapi_key = st.sidebar.text_input("NVIDIA API key")
->>>>>>> 540f0fa1d2a8a39b03b249749f648d1f193aac55
 os.environ["NVIDIA_API_KEY"] = nvapi_key
 
 if "history" not in st.session_state:
@@ -61,72 +53,57 @@ memory = ConversationBufferMemory(chat_memory=msgs, return_messages=True, memory
 
 prompt_template = '''
 Greeting:
+User Name = Emily
 user: -hi, hello, how are you
 Agent: Hi,Emily! how are you doing today? How can I assist you with your health concerns?
 
-Continue the conversation based on the user's response.
+
+You need to follow the template using the {input}.
+You can find your and the user's previous messages in {history}.
+
+Continue the conversation based on the user's {input}.
 If user ask question: Answer the questions to the best of your ability.
-If the user is not feeling well or has symptoms:
-- Acknowledge their symptom once, and then proceed with relevant questions without repeating the sympathy for each response.
+
+If the user is not feeling well or has symptoms in {input}:
+- Acknowledge their symptom once with sympathy, and then proceed with relevant questions without repeating the sympathy for each response.
 
 Please ask relevant, clear, and concise questions to capture the patient’s symptoms accurately and naturally.
 Do not diagnose or provide treatment advice.
 If the user mentions any symptoms relevant to the template, do not ask for the same symptom again.
-You need to follow the template using the {input}.
-You can find your and the user's previous messages in {history}.
+
 Do not repeat the history in the conversation.
 Try to continue the conversation based on the template.
 If the user mentions any symptoms, do not ask for the same symptom again.
 The user might mention multiple symptoms; ask about all of them.
-
 Do not write phrases like "Here's my response based on the template."
-
-Emergency situation:
-- stroke,
-- heart attack,
-- severe allergic reaction,
-- severe bleeding,
-- severe burns,
-- severe chest pain,
-
-If you think the user needs immediate medical attention, end the conversation at any time with the following message:
-- This is an emergency. Do not wait for a response. Call 911 immediately.
 
 Template:
 
 We need to collect the following information from you:
 
-Primary Symptom:
-• Can you describe the main symptom or issue you are experiencing?
-
-Additional Symptoms:
+1.Additional Symptoms:
 • Are you experiencing any other symptoms? (e.g., fever, fatigue, nausea, dizziness)
 • If yes, please list and describe them.
 
-Severity:
+2.Severity:
 • On a scale of 1 to 10, how severe is this symptom?
 • Does the severity fluctuate throughout the day?
 
-Duration:
+3.Duration:
 • How long have you been experiencing this symptom?
 • Did it start suddenly or gradually?
 
-Medical History:
-• Do you have any existing medical conditions or a history of similar issues?
-• Are you currently taking any medications or supplements?
 
-Additional Information:
+4.Additional Information:
 • Is there anything else you think might be relevant to your symptoms?
 
-Insurance information:
+5.Insurance information:
 • Do you have insurance? If so, what is your insurance provider?
 
-Doctor Appointment:
-• Have you seen a doctor recently or are you planning to see a doctor for this issue?
+6.Doctor Appointment:
 • Have you scheduled an appointment with a specific doctor, or would you like help finding a doctor in your area?
-• Have you considered going to an urgent care or an emergency room, or would you prefer to schedule an appointment with a primary care physician?
 
-Extract at the end Summary:
+Extract_Summary =
 • Symptoms:
     • Symptom 1: [Name] - Duration: [Time] - Severity: [Scale] - previous episodes: [detail], medical history: [detail], insurance: [provider]
     • Symptom 2: [Name] - Duration: [Time] - Severity: [Scale] - previous episodes: [detail], medical history: [detail], insurance: [provider]
@@ -135,7 +112,7 @@ Extract at the end Summary:
     • [other relevant information]
 
 END conversation with the following message:
-We will send your information to a healthcare professional for further evaluation. Please seek medical attention if your symptoms worsen or if you experience any emergency symptoms. Thank you for sharing your information with us.
+Please seek medical attention if your symptoms worsen or if you experience any emergency symptoms. Thank you for sharing your information with us.
 
 '''
 
@@ -147,11 +124,6 @@ llm = ChatNVIDIA(model="meta/llama3-70b-instruct", nvidia_api_key=nvapi_key, max
 config = RailsConfig.from_path("config")
 guardrails = RunnableRails(config)
 
-# chain = LLMChain(
-#     llm=llm,
-#     prompt=prompt_1,
-#     verbose=True,
-# )
 output_parser = StrOutputParser()
 
 
@@ -173,7 +145,6 @@ if prompt := st.chat_input(placeholder="How do you feel today?"):
     st.chat_message("user", avatar=avatars["human"]).write(prompt)
     with st.chat_message("assistant", avatar=avatars["ai"]):
         with st.spinner("Generating response..."):
-<<<<<<< HEAD
             msgs.add_user_message(prompt)
             st.session_state.history.append({"role": 'user', "content": prompt})
             response = chain.invoke({'input': prompt, 'history': st.session_state.history})
@@ -181,12 +152,3 @@ if prompt := st.chat_input(placeholder="How do you feel today?"):
             msgs.add_ai_message(response)
 
         st.write(response)
-=======
-            st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
-            cfg = RunnableConfig()
-            cfg["callbacks"] = [st_cb]
-            st.write(["callbacks"])
-            
-            response = rails.generate(prompt=prompt)
-        st.write(response)
->>>>>>> 540f0fa1d2a8a39b03b249749f648d1f193aac55
