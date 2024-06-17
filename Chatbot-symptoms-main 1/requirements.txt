@@ -1,0 +1,5 @@
+streamlit
+langchain
+langchain_community
+langchain_openai
+langchain_nvidia_ai_endpoints
