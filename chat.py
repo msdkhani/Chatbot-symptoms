@@ -27,10 +27,11 @@ st.markdown(
         .st-emotion-cache-janbn0 {
             flex-direction: row-reverse;
             text-align: right;
+            background-color: rgb(111 176 255 / 50%);
         }
         .st-emotion-cache-p4micv {
-            width: 3rem;
-            height: 3rem;
+            width: 4rem;
+            height: 4rem;
         }
     </style>
     """,
@@ -39,7 +40,11 @@ st.markdown(
 
 st.title("CarePilot")
 
-nvapi_key = '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'
+nvapi_key = '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'
+
+# Set up the NVIDIA API key: ask the user to provide it in the side bar
+#st.sidebar.markdown("Please provide your NVIDIA API key:")
+#nvapi_key = st.sidebar.text_input("NVIDIA API key")
 os.environ["NVIDIA_API_KEY"] = nvapi_key
 
 if "history" not in st.session_state:
@@ -49,93 +54,80 @@ st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
 msgs = StreamlitChatMessageHistory()
 memory = ConversationBufferMemory(chat_memory=msgs, return_messages=True, memory_key="chat_history")
 
-
-
-prompt_template = '''
-Greeting:
+if len(msgs.messages) == 0 :
+    from recommend_physician import reco
+    st.session_state.doctor_recom = reco()
+    prompt_template = '''
+Greet once:
 User Name = Emily
 user: -hi, hello, how are you
-Agent: Hi,Emily! how are you doing today? How can I assist you with your health concerns?
-
-
-You need to follow the template using the {input}.
+Agent: Hi, User Name! how are you doing today? How can I assist you with your health concerns?
+ 
+ 
+ 
 You can find your and the user's previous messages in {history}.
-
-Continue the conversation based on the user's {input}.
+You need to follow the Questions using the {input}.
+ 
+Continue the conversation based on the Questions.
 If user ask question: Answer the questions to the best of your ability.
-
+ 
 If the user is not feeling well or has symptoms in {input}:
 - Acknowledge their symptom once with sympathy, and then proceed with relevant questions without repeating the sympathy for each response.
-
-Please ask relevant, clear, and concise questions to capture the patient’s symptoms accurately and naturally.
-Do not diagnose or provide treatment advice.
-If the user mentions any symptoms relevant to the template, do not ask for the same symptom again.
-
+ 
+Please Keep the questions in the same order as the template. Do not ask the same question twice. Do not ask more questions.
+ 
 Do not repeat the history in the conversation.
-Try to continue the conversation based on the template.
+Try to continue the conversation based on the Questions.
 If the user mentions any symptoms, do not ask for the same symptom again.
-The user might mention multiple symptoms; ask about all of them.
 Do not write phrases like "Here's my response based on the template."
-
-Template:
-
+Do not repeat what users mentioned in the conversation.
+ 
+Questions Flow:
+ 
 We need to collect the following information from you:
-
+ 
 1.Additional Symptoms:
-• Are you experiencing any other symptoms? (e.g., fever, fatigue, nausea, dizziness)
+• Are you experiencing any other symptoms?
 • If yes, please list and describe them.
-
+ 
 2.Severity:
 • On a scale of 1 to 10, how severe is this symptom?
-• Does the severity fluctuate throughout the day?
-
+ 
 3.Duration:
 • How long have you been experiencing this symptom?
-• Did it start suddenly or gradually?
+ 
+4.Physiscian
+. Do you consider your condition as an emergency?
 
-
-4.Additional Information:
-• Is there anything else you think might be relevant to your symptoms?
-
-5.Insurance information:
-• Do you have insurance? If so, what is your insurance provider?
-
-6.Doctor Appointment:
-• Have you scheduled an appointment with a specific doctor, or would you like help finding a doctor in your area?
-
-Extract_Summary =
-• Symptoms:
-    • Symptom 1: [Name] - Duration: [Time] - Severity: [Scale] - previous episodes: [detail], medical history: [detail], insurance: [provider]
-    • Symptom 2: [Name] - Duration: [Time] - Severity: [Scale] - previous episodes: [detail], medical history: [detail], insurance: [provider]
-    • …
-• Notes:
-    • [other relevant information]
-
-END conversation with the following message:
+8. END conversation with the following message:
 Please seek medical attention if your symptoms worsen or if you experience any emergency symptoms. Thank you for sharing your information with us.
-
+ 
 '''
 
+    input_variables = ['input', 'history']
+    prompt_1 = PromptTemplate(template=prompt_template, input_variables=input_variables)
+    llm = ChatNVIDIA(model="meta/llama3-70b-instruct", nvidia_api_key=nvapi_key, max_tokens=200)
 
-input_variables = ['input', 'history']
-prompt_1 = PromptTemplate(template=prompt_template, input_variables=input_variables)
-llm = ChatNVIDIA(model="meta/llama3-70b-instruct", nvidia_api_key=nvapi_key, max_tokens=150)
+    config = RailsConfig.from_path("config")
+    guardrails = RunnableRails(config)
 
-config = RailsConfig.from_path("config")
-guardrails = RunnableRails(config)
+    # chain = LLMChain(
+    #     llm=llm,
+    #     prompt=prompt_1,
+    #     verbose=True,
+    # )
+    output_parser = StrOutputParser()
 
-output_parser = StrOutputParser()
 
+    st.session_state.chain = prompt_1 | (guardrails | llm) | output_parser
 
-chain = prompt_1 | (guardrails | llm) | output_parser
-
-if len(msgs.messages) == 0:
     msgs.clear()
 
 avatars = {
-    "human": 'https://static01.nyt.com/images/2018/09/21/books/00edim1/merlin_137623458_968f9cfc-ceb1-449e-b5ce-543fffca302b-articleLarge.jpg?quality=75&auto=webp&disable=upscale',
-    "ai": 'https://media.istockphoto.com/id/1329569957/photo/happy-young-female-doctor-looking-at-camera.jpg?s=612x612&w=0&k=20&c=7Wq_Y2cl0T4op6Wg_3DFc-xtZfCqTTDvfaXkPGyrHDM='
+    "human": 'https://www.growcropsonline.com/assets/img/agent-2.jpg',
+    "ai": 'https://img.freepik.com/premium-photo/female-nurse-with-stethoscope-cap-3d-rendering_1057-19809.jpg'
 }
+
 
 for idx, msg in enumerate(msgs.messages):
     with st.chat_message(msg.type, avatar=avatars[msg.type]):
@@ -147,8 +139,12 @@ if prompt := st.chat_input(placeholder="How do you feel today?"):
         with st.spinner("Generating response..."):
             msgs.add_user_message(prompt)
             st.session_state.history.append({"role": 'user', "content": prompt})
-            response = chain.invoke({'input': prompt, 'history': st.session_state.history})
+            response = st.session_state.chain.invoke({'input': prompt, 'history': st.session_state.history})
             st.session_state.history.append({"role": 'assistant', "content": response})
             msgs.add_ai_message(response)
 
-        st.write(response)
+        if 'sepcialist' in prompt.lower() or 'sepcialist' in prompt.lower() or 'urgent' in prompt.lower():
+            print(response)
+            response = st.session_state.doctor_recom.call_fn(response)
+            msgs.add_ai_message(response)
+    st.write(response)
