@@ -30,7 +30,7 @@ Use natural language to ask chatbot about your health issues, it would ask relev
 - **NVIDIAEmbeddings**:
  NVIDIA embeddings are used to create and manage embeddings for documents.
 
-- **langchain_nvidia_ai_endpoints, NVIDIA AI Foundation endpoints**:
+- **Langchain_nvidia_ai_endpoints, NVIDIA AI Foundation endpoints**:
   This package is used to integrate NVIDIA AI Foundation endpoints with LangChain. It provides access to NVIDIA's advanced AI models for embedding generation, document ranking, and large language model (LLM) interactions.
  relevant documents based on user queries.
 
