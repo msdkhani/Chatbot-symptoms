@@ -2,7 +2,7 @@
 
 ### Demo Video
 Click the thumbnail below to watch the demo on YouTube:
-[![Watch the video](img width="1440" alt="Screenshot 2024-06-20 at 2 52 08 AM" src="https://github.com/msdkhani/Chatbot-symptoms/assets/76404542/b1f4ca82-4180-4366-abe0-8a162e3c795f">)]((https://www.youtube.com/watch?v=Q40DGRHC0XA))
+[![Watch the video](src="https://github.com/msdkhani/Chatbot-symptoms/assets/76404542/b1f4ca82-4180-4366-abe0-8a162e3c795f">)]((https://www.youtube.com/watch?v=Q40DGRHC0XA))
 <img width="1440" alt="Screenshot 2024-06-20 at 2 52 08 AM" src="https://github.com/msdkhani/Chatbot-symptoms/assets/76404542/b1f4ca82-4180-4366-abe0-8a162e3c795f">
 
 ### Impact
