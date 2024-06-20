@@ -12,18 +12,24 @@ Leveraging advanced large language models (LLMs), our chatbot offers a user-frie
 Use natural language to ask chatbot about your health issues, it would ask relevant questions to your symptoms, to extract information about your clinical condition.
 
 ### Instructions
-```bash
  - Clone the repository from GitHub
-```
-```bash
  - Navigate to the project directory
-```
 ```bash
- - Install the required Python packages: pip install -r requirements.txt
+cd /{repository_dir}
 ```
+ - Install the required Python packages: 
 ```bash
- - Run the application using Streamlit: streamlit run chat.py
+pip install -r requirements.txt
 ```
+- Change the Nvidia_api on the chat.py: 
+```bash
+nvapi_key = 'nvapi-...'
+```
+ - Run the application using Streamlit: 
+```bash
+streamlit run chat.py
+```
+
 
 ### Workflow Diagram:
 
