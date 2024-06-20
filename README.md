@@ -18,30 +18,32 @@ Use natural language to ask chatbot about your health issues, it would ask relev
 
 ### What Was Used in This Project
 - **Langchain**:
-ConversationalRetrievalChain and LLMChain from langchain.chains for conversational retrieval and language model chains.
-QuestionGenerationChain from langchain.chains.question_answering for question generation.
-ConversationBufferMemory from langchain.memory for managing conversation memory.
-FAISS from langchain.vectorstores for managing embeddings and similarity search.
+ ConversationalRetrievalChain and LLMChain from langchain.chains for conversational retrieval and language model chains.
+ QuestionGenerationChain from langchain.chains.question_answering for question generation.
+ ConversationBufferMemory from langchain.memory for managing conversation memory.
+ FAISS from langchain.vectorstores for managing embeddings and similarity search.
 
--**NVIDIAEmbeddings**:
-NVIDIA embeddings are used to create and manage embeddings for documents.
+- **NVIDIAEmbeddings**:
+ NVIDIA embeddings are used to create and manage embeddings for documents.
 
 - **langchain_nvidia_ai_endpoints, NVIDIA AI Foundation endpoints**:
-- This package is used to integrate NVIDIA AI Foundation endpoints with LangChain. It provides access to NVIDIA's advanced AI models for embedding generation, document ranking, and large language model (LLM) interactions.
+  This package is used to integrate NVIDIA AI Foundation endpoints with LangChain. It provides access to NVIDIA's advanced AI models for embedding generation, document ranking, and large language model (LLM) interactions.
  relevant documents based on user queries.
 
 - **NVIDIA NIM API (meta/llama3-70b)**:
-- This API provides the large language model used for generating the final response to the user's query. It processes the crafted prompt and produces a coherent and accurate answer.
+  This API provides the large language model used for generating the final response to the user's query. It processes the crafted prompt and produces a coherent and accurate answer.
 
 
-**Streamlit**:
+- **Streamlit**:
 Used for building interactive web applications for data science and machine learning.
 
-**Nemoguardrails**:
+- **Nemoguardrails**:
 LLMRails and RailsConfig from nemoguardrails for managing guardrails.
-**Chains**:
+
+- **Chains**:
 LLMChain from langchain.chains for language model chaining.
-**Langchain Core**:
+
+- **Langchain Core**:
 PromptTemplate from langchain_core.prompts for defining prompt templates.
 StrOutputParser from langchain_core.output_parsers for parsing model output.
 
