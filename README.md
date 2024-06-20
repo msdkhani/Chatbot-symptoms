@@ -1,8 +1,7 @@
 ## NVIDIA LangChain DocsAgent
 
 ### Demo Video
-Click the thumbnail below to watch the demo on YouTube:
-((https://www.youtube.com/watch?v=Q40DGRHC0XA))<img width="1440" alt="Screenshot 2024-06-20 at 2 53 48 AM" src="https://github.com/msdkhani/Chatbot-symptoms/assets/76404542/11b23dcb-8b12-431b-9178-2f349455b28a">
+[![Demo Video](https://github.com/msdkhani/Chatbot-symptoms/assets/76404542/11b23dcb-8b12-431b-9178-2f349455b28a)](https://www.youtube.com/watch?v=Q40DGRHC0XA)
 
 
 ### Impact
