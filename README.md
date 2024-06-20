@@ -9,7 +9,7 @@ Click on the image below to watch the demo video of the "CarePilot" on YouTube:
 ### Impact
 Leveraging advanced large language models (LLMs), our chatbot offers a user-friendly interface to simplify healthcare navigation. A 2019 survey revealed that 63% of patients struggle with the healthcare system, facing issues like understanding treatment options (51%), finding the right doctor (49%), and comprehending medical costs (47%). Complexity and unclear roles of healthcare providers add to these challenges, particularly for marginalized communities, resulting in significant healthcare inequities and nearly $320 billion in annual spending. Additionally, the fragmentation of healthcare into over 120 specialties makes finding the right care difficult. Our chatbot addresses these issues by using LLMs to identify the relevant physician based on symptoms. It considers the user’s location and insurance details to recommend suitable doctors and facilitate appointment bookings, ensuring timely medical intervention and improved health outcomes. By bridging the gap between patients and healthcare providers, our chatbot enhances healthcare accessibility, particularly in low-resource regions, aiming to significantly improve patient care.
 ### Use Case
-Use natural language to ask chatbot about your health issues, it would ask relevant questions to your symptoms, to extract as much information.
+Use natural language to ask chatbot about your health issues, it would ask relevant questions to your symptoms, to extract information about your clinical condition.
 
 ### Instructions
  - Clone the repository from GitHub
