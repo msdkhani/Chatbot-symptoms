@@ -29,11 +29,11 @@ Use natural language to ask chatbot about your health issues, it would ask relev
  FAISS from langchain.vectorstores for managing embeddings and similarity search.
 
 - **NVIDIAEmbeddings**:
- NVIDIA embeddings are used to create and manage embeddings for documents.
+ NVIDIA embeddings are used to create and manage embeddings for documents in case of searching the internet for physician recommendation.
 
 - **Langchain_nvidia_ai_endpoints, NVIDIA AI Foundation endpoints**:
   This package is used to integrate NVIDIA AI Foundation endpoints with LangChain. It provides access to NVIDIA's advanced AI models for embedding generation, document ranking, and large language model (LLM) interactions.
- relevant documents based on user queries.
+ 
 
 - **NVIDIA NIM API (meta/llama3-70b)**:
   This API provides the large language model used for generating the final response to the user's query. It processes the crafted prompt and produces a coherent and accurate answer.
@@ -45,8 +45,6 @@ Used for building interactive web applications for data science and machine lear
 - **Nemoguardrails**:
 LLMRails and RailsConfig from nemoguardrails for managing guardrails.
 
-- **Chains**:
-LLMChain from langchain.chains for language model chaining.
 
 - **Langchain Core**:
 PromptTemplate from langchain_core.prompts for defining prompt templates.
