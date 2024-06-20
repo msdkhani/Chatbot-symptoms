@@ -20,6 +20,7 @@ Use natural language to ask chatbot about your health issues, it would ask relev
 
 ### Workflow Diagram:
 
+![Untitled 2 006](https://github.com/msdkhani/Chatbot-symptoms/assets/76404542/7a0a8a2e-0f1d-4cd6-93e4-d162a2bf5e21)
 
 ### What Was Used in This Project
 - **Langchain**:
