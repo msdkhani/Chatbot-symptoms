@@ -2,6 +2,7 @@
 
 ### Demo Video
 Click on the image below to watch the demo video of the "CarePilot" on youtube:
+
 [![Demo Video](https://github.com/msdkhani/Chatbot-symptoms/assets/76404542/11b23dcb-8b12-431b-9178-2f349455b28a)](https://www.youtube.com/watch?v=Q40DGRHC0XA)
 
 
