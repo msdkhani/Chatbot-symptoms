@@ -12,6 +12,7 @@ Leveraging advanced large language models (LLMs), our chatbot offers a user-frie
 Use natural language to ask chatbot about your health issues, it would ask relevant questions to your symptoms, to extract information about your clinical condition.
 
 ### Instructions
+'''bash
  - Clone the repository from GitHub
  - Navigate to the project directory
  - Install the required Python packages: pip install -r requirements.txt
