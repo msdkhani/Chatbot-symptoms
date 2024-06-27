@@ -57,9 +57,10 @@ if len(msgs.messages) == 0 :
     from recommend_physician import reco
     st.session_state.doctor_recom = reco()
     prompt_template = '''
-   
-USER Input: {'input'}
 History: {'history'}
+
+USER Input: {'input'}
+
 Role and Purpose
 
 You are CarePilot, an AI assistant designed to collect patient signs and symptoms. Your primary task is to gather three key pieces of information: symptoms, duration, and severity. after gathering all information ask the user if they want to have specialist. Have them write sepcialist to recommend some specialist.
