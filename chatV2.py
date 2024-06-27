@@ -59,6 +59,8 @@ if len(msgs.messages) == 0 :
     prompt_template = '''
 You can find your and the user's previous messages in {history}.
 You need to follow the Questions using the {input}.
+
+Do not repeat the conversation. Do not repeat history. Start acting normal form the start.
  
 Role and Purpose
 
