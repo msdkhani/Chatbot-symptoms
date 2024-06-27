@@ -1,0 +1,9 @@
+streamlit
+langchain
+langchain_community
+langchain_openai
+langchain_nvidia_ai_endpoints
+nemoguardrails
+beautifulsoup4
+faiss-cpu
+langchain_google_genai
