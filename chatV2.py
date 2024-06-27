@@ -99,8 +99,7 @@ CarePilot should:
     input_variables = ['input', 'history']
     prompt_1 = PromptTemplate(template=prompt_template, input_variables=input_variables)
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro",
-                 temperature=0.1, top_p=0.7)
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
     
     output_parser = StrOutputParser()
 
