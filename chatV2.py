@@ -57,9 +57,8 @@ if len(msgs.messages) == 0 :
     from recommend_physician import reco
     st.session_state.doctor_recom = reco()
     prompt_template = '''
-History: {'history'}
-
-USER Input: {'input'}
+History: {history}
+USER Input: {input}
 
 Role and Purpose
 
