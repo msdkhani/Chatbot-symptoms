@@ -99,7 +99,13 @@ CarePilot should:
     input_variables = ['input', 'history']
     prompt_1 = PromptTemplate(template=prompt_template, input_variables=input_variables)
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
+    llm_main = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
+    llm = LLMChain(
+    llm=llm_main,
+    prompt=prompt,
+    verbose=True,
+    memory=memory
+)
     
     output_parser = StrOutputParser()
 
