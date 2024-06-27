@@ -15,6 +15,12 @@ from langchain.chains import LLMChain
 from langchain_core.prompts import PromptTemplate
 from nemoguardrails.integrations.langchain.runnable_rails import RunnableRails
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
 
 #logging.basicConfig(level=logging.INFO)
 
@@ -56,19 +62,18 @@ memory = ConversationBufferMemory(chat_memory=msgs, return_messages=True, memory
 if len(msgs.messages) == 0 :
     from recommend_physician import reco
     st.session_state.doctor_recom = reco()
-    prompt_template = '''
-You can find your and the user's previous messages in {history}.
-You need to follow the Questions using the {input}.
 
-Do not repeat the conversation. Do not repeat history. Start acting normal form the start.
- 
+
+prompt_template = '''
+
 Role and Purpose
 
-You are CarePilot, an AI assistant designed to collect patient signs and symptoms. Your primary task is to gather three key pieces of information: symptoms, duration, and severity. After collecting everything if the user wants the specialist have them type sepcialist to find the nearest specialist.
+You are CarePilot, an AI assistant designed to collect patient signs and symptoms.
+Your primary task is to gather three key pieces of information: symptoms, duration, and severity. After collecting everything if the user wants the specialist have them type sepcialist to find the nearest specialist. Make sure you collect the information in a natural and empathetic manner.
 
 Conversation Flow
 
-Engage in a conversation to collect each piece of information separately to ensure a natural flow.
+Engage in a conversation to collect each piece of information separately to ensure a natural flow just like a nurse.
 
 Emergency Protocol
 
@@ -77,14 +82,7 @@ If at any point it appears to be an emergency, immediately instruct the user to 
 Handling Specific Emergency Situations
 
 General Instructions for Emergencies
-
-1.    Stay Calm: Encourage the patient to stay calm.
-
-2.    Contact Emergency Services: Immediately instruct the patient to call emergency services (911 or local emergency number).
-
-3.    Provide Basic Guidance: Offer simple, clear instructions based on the situation.
-
-4.    Stop Collecting Information: Do not continue collecting further information once an emergency is identified.
+Encourage the patient to stay calm.Immediately instruct the patient to call emergency services (911 or local emergency number).Offer simple, clear instructions based on the situation. Do not continue collecting further information once an emergency is identified.
 
 Summary
 
@@ -100,22 +98,34 @@ CarePilot should:
  
 '''
 
-    input_variables = ['input', 'history']
-    prompt_1 = PromptTemplate(template=prompt_template, input_variables=input_variables)
-
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
-
-    output_parser = StrOutputParser()
 
 
-    st.session_state.chain = prompt_1 |  llm | output_parser
-
-    msgs.clear()
 
 avatars = {
     "human": 'https://www.growcropsonline.com/assets/img/agent-2.jpg',
     "ai": 'https://img.freepik.com/premium-photo/female-nurse-with-stethoscope-cap-3d-rendering_1057-19809.jpg'
 }
+
+prompt = ChatPromptTemplate(
+        messages=[
+            SystemMessagePromptTemplate.from_template(
+prompt_template ),
+            # The `variable_name` here is what must align with memory
+            MessagesPlaceholder(variable_name="chat_history"),
+                    HumanMessagePromptTemplate.from_template(
+            "{human_input}"
+        ),
+        ]
+    )
+
+
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
+conversation = LLMChain(
+    llm=llm,
+    prompt=prompt,
+    verbose=True,
+    memory=memory)
+
 
 
 for idx, msg in enumerate(msgs.messages):
@@ -126,13 +136,11 @@ if prompt := st.chat_input(placeholder="How do you feel today?"):
     st.chat_message("user", avatar=avatars["human"]).write(prompt)
     with st.chat_message("assistant", avatar=avatars["ai"]):
         with st.spinner("Generating response..."):
-            msgs.add_user_message(prompt)
-            st.session_state.history.append({"role": 'user', "content": prompt})
-            response = st.session_state.chain.invoke({'input': prompt, 'history': st.session_state.history})
-            st.session_state.history.append({"role": 'assistant', "content": response})
-            msgs.add_ai_message(response)
 
-        if 'sepcialist' in prompt.lower() or 'sepcialist' in prompt.lower() or 'urgent' in prompt.lower():
+            response = conversation.predict(human_input=prompt)
+            st.session_state.history.append({"role": 'assistant', "content": response})
+
+        if 'specialist' in prompt.lower() or 'specialist' in prompt.lower() or 'urgent' in prompt.lower():
             print(response)
             response = st.session_state.doctor_recom.call_fn(response)
             msgs.add_ai_message(response)
