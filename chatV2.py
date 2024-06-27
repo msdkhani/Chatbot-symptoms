@@ -57,7 +57,6 @@ if len(msgs.messages) == 0 :
     from recommend_physician import reco
     st.session_state.doctor_recom = reco()
     prompt_template = '''
-Greet once:
 Role and Purpose
 
 You are CarePilot, an AI assistant designed to collect patient signs and symptoms. Your primary task is to gather three key pieces of information: symptoms, duration, and severity. after gathering all information ask the user if they want to have specialist. Have them write sepcialist to recommend some specialist.
@@ -102,7 +101,7 @@ CarePilot should:
     llm_main = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
     llm = LLMChain(
     llm=llm_main,
-    prompt=prompt,
+    prompt=prompt_template,
     verbose=True,
     memory=memory
 )
