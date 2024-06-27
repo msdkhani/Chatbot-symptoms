@@ -1,6 +1,10 @@
 # CarePilot
 ## NVIDIA LangChain DocsAgent
 
+### Online Demo:
+[Carepilot.streamlit.app](https://carepilot.streamlit.app)
+
+
 ### Demo Video
 Click on the image below to watch the demo video of the "CarePilot" on YouTube:
 
