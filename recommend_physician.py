@@ -135,7 +135,7 @@ def index_docs(url: Union[str, bytes], splitter, documents: List[str], dest_embe
 
 class reco():
     def __init__(self) -> None:
-        create_embeddings()
+        # create_embeddings()
 
         self.embedding_model = NVIDIAEmbeddings(model="nvolveqa_40k")
 
