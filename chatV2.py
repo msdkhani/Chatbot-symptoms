@@ -101,7 +101,7 @@ CarePilot should:
     llm_main = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
     llm = LLMChain(
     llm=llm_main,
-    prompt=prompt_template,
+    prompt=prompt_1,
     verbose=True,
     memory=memory
 )
