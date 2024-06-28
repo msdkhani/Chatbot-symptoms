@@ -59,17 +59,15 @@ st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
 msgs = StreamlitChatMessageHistory()
 memory = ConversationBufferMemory(chat_memory=msgs, return_messages=True, memory_key="chat_history")
 
-if len(msgs.messages) == 0 :
-    from recommend_physician import reco
-    st.session_state.doctor_recom = reco()
-
+from recV2 import PhysicianRecommender
+rec = PhysicianRecommender()
 
 prompt_template = '''
 
 Role and Purpose
 
 You are CarePilot, an AI assistant designed to collect patient signs and symptoms.
-Your primary task is to gather three key pieces of information: symptoms, duration, and severity. After collecting everything if the user wants the specialist have them type sepcialist to find the nearest specialist. Make sure you collect the information in a natural and empathetic manner.
+Your primary task is to gather three key pieces of information: symptoms, duration, and severity make sure to collect all the symptoms. After collecting everything if the user wants the specialist have them type sepcialist to find the nearest specialist. Make sure you collect the information in a natural and empathetic manner.
 
 Conversation Flow
 
@@ -139,9 +137,7 @@ if prompt := st.chat_input(placeholder="How do you feel today?"):
 
             response = conversation.predict(human_input=prompt)
             st.session_state.history.append({"role": 'assistant', "content": response})
-
         if 'specialist' in prompt.lower() or 'specialist' in prompt.lower() or 'urgent' in prompt.lower():
-            print(response)
-            response = st.session_state.doctor_recom.call_fn(response)
+            response = rec.reco()
             msgs.add_ai_message(response)
     st.write(response)
