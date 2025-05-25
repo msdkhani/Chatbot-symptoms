@@ -1,5 +1,7 @@
 # CarePilot
 ## NVIDIA LangChain DocsAgent
+#Won NVIDIA AI Agent Contests:
+https://www.nvidia.com/en-sg/ai-data-science/generative-ai/developer-contest-with-langchain/
 
 ### Online Demo:
 [Carepilot.streamlit.app](https://carepilot.streamlit.app)
